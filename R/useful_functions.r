@@ -111,22 +111,22 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence, col=Sim))
   p1<-p + 
     geom_line(size=1.2) +
-    ggtitle ('TB Incidence') +
-    theme_bw() + ylab('Rate per 100,000 pop')+
+    ggtitle ('TB Incidence (Community)') +
+    theme_bw() + ylab('Rate per 100k')+
     ylim(0,max(data$Incidence))
 
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p, col=Sim))
   p2<-p + 
     geom_line(size=1.2) +
-    ggtitle ('TB Incidence in prisons') +
-    theme_bw() + ylab('Rate per 100,000 imprisoned')+
+    ggtitle ('TB Incidence (Prisons)') +
+    theme_bw() + ylab('Rate per 100k')+
     ylim(0,max(data$Incidence_p))
 
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x, col=Sim))
   p3<-p + 
     geom_line(size=1.2) +
-    ggtitle ('TB Incidence among ex-prisoners') +
-    theme_bw() + ylab('Rate per 100,000 ex-prisoners')+
+    ggtitle ('TB Incidence (Ex-prisoners)') +
+    theme_bw() + ylab('Rate per 100k')+
     ylim(0,max(data$Incidence_x))
 
   p<- ggplot(data=data, mapping = aes(x=Years, y=Np*1e5, col=Sim))
