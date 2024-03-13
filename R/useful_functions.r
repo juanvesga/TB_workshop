@@ -8,7 +8,8 @@ scale_up<- function (t, state, parameters,t.interv,parameters_old,fx) {
     scale=0
   }
   
-  pars_scaled <- parameters;
+  pars_scaled <- parameters
+  
   
   pars_scaled <- parameters_old + scale*(parameters-parameters_old)
   
@@ -19,7 +20,7 @@ scale_up<- function (t, state, parameters,t.interv,parameters_old,fx) {
 ## int function
 
 get_intervention<- function (sfin, params_new, params_old,times_new,
-                             t.interv, fx_scale,fx_basic, int_name, data_stub) {
+                             t.interv, int_name, data_stub=NA) {
   
   # Starting conditions
   xstart <- c(U = sfin$U, 
@@ -43,25 +44,34 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
               Incidence_p = sfin$Incidence_p,
               Irecent_p=   sfin$Irecent_p,  
               Iremote_p=   sfin$Iremote_p) 
-
+  
   #Select type of function
   if (sum(is.na(t.interv))>0)
   {
-    fx<-fx_basic
+    fx<-TB_prison
   }  else {
-    fx<-fx_scale
+    
+    fx<-function(t, state, parameters) scale_up(t, 
+                                                state, 
+                                                parameters,
+                                                t.interv,
+                                                params_old,
+                                                TB_prison)
+    
   }
-
+  
   #Run the model
-  out <- as.data.frame(ode(y = xstart, times = times_new, 
-                           func = fx, parms = params_new))  #
-                       
+  out <- as.data.frame(ode(y = xstart, 
+                           times = times_new, 
+                           func = fx, 
+                           parms = params_new))  #
+  
   # Model output
   N           <- out$U+out$L+out$I+out$R  
   prev        <- out$I/N
   rate.inc    <- 1e5*(diff(out$Incidence)/N[1:length(N)-1])
   fr.remo     <- diff(out$Iremote)/diff(out$Incidence)
-
+  
   Np            <- out$Up+out$Lp+out$Ip+out$Rp  
   prev_p        <- out$Ip/Np
   rate.inc_p    <- 1e5*(diff(out$Incidence_p)/Np[1:length(Np)-1])
@@ -71,10 +81,10 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   prev_x        <- out$Ix/Nx
   rate.inc_x    <- 1e5*(diff(out$Incidence_x)/Nx[1:length(Nx)-1])
   fr.remo_x     <- diff(out$Iremote_x)/diff(out$Incidence_x)
-
+  
   time         <- out$time[1:length(out$time)-1]
   
-
+  
   dat         <- data.frame(
     Years=time+(2024-400), 
     Incidence=rate.inc,
@@ -86,7 +96,6 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
     N=N[c(2:length(N))],
     Nx=Nx[c(2:length(Nx))],
     Np=Np[c(2:length(Np))])
-  
   
   
   dat$Sim     <- int_name
@@ -101,48 +110,106 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
     data  <-rbind(data_stub, dat)
   }
   
+  levs<-c("Baseline",
+          "Diagnosis",
+          "Treatment",
+          "Fast access",
+          "Prevention",
+          "Fast access X",
+          "Prevention X")
+  
+  data$Sim<-factor(data$Sim, levels=levs)
   remote<-fr.remo  # rename a variable with the fraction of remote incidence 
   remote_p<-fr.remo_p  # rename a variable with the fraction of remote incidence 
   remote_x<-fr.remo_x  # rename a variable with the fraction of remote incidence 
   
   titl  <-int_name
   
+  
+  colors <- c("Community" = "gold", 
+              "Ex-prisoners" = "lightseagreen",
+              "Prisoners" = "grey43")
+  
+  colors_scen<-c("Baseline"="#c23d3d",
+          "Diagnosis"="#5342f0",
+          "Treatment"="#ff6600",
+          "Fast access"="#055770",
+          "Prevention"="#d3b016",
+          "Fast access X" = "#3aaf1d",
+          "Prevention X"="#e448e4")
+  
   # Create our plot
-  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence, col=Sim))
-  p1<-p + 
-    geom_line(size=1.2) +
+  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence))
+  pb1<-p + 
+    geom_line(linewidth=1.2, color="firebrick") +
+    geom_point(aes(x=2023,y=250),shape = 15, color = "black", size = 3) +
     ggtitle ('TB Incidence (Community)') +
     theme_bw() + ylab('Rate per 100k')+
-    ylim(0,max(data$Incidence))
-
-  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p, col=Sim))
-  p2<-p + 
-    geom_line(size=1.2) +
+    ylim(c(0,1000))+
+    xlim(c(1980,2024))
+  
+  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p))
+  pb2<-p + 
+    geom_line(linewidth=1.2,, color="firebrick") +
+    geom_point(aes(x=2023,y=990),shape = 15, color = "black", size = 3) +
     ggtitle ('TB Incidence (Prisons)') +
     theme_bw() + ylab('Rate per 100k')+
-    ylim(0,max(data$Incidence_p))
-
-  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x, col=Sim))
-  p3<-p + 
-    geom_line(size=1.2) +
+     ylim(c(0,1000))+
+    xlim(c(1980,2024))
+  
+  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x))
+  pb3<-p + 
+    geom_line(linewidth=1.2) +
     ggtitle ('TB Incidence (Ex-prisoners)') +
     theme_bw() + ylab('Rate per 100k')+
     ylim(0,max(data$Incidence_x))
-
+  
+  
+  
+  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence, col=Sim))
+  p1<-p + 
+    geom_line(linewidth=1.2) +
+    ggtitle ('TB Incidence (Community)') +
+    theme_bw() + ylab('Rate per 100k')+
+    theme(legend.title=element_blank(), legend.text=element_text(size=7))+ 
+    ylim(0,max(data$Incidence))+
+    xlim(c(2024,2035))+
+    scale_color_manual(values = colors_scen) 
+  
+  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p, col=Sim))
+  p2<-p + 
+    geom_line(linewidth=1.2) +
+    ggtitle ('TB Incidence (Prisons)') +
+    theme_bw() + ylab('Rate per 100k')+
+    theme(legend.title=element_blank(), legend.text=element_text(size=7))+ 
+    ylim(0,max(data$Incidence_p))+
+    xlim(c(2024,2035))+
+    scale_color_manual(values = colors_scen) 
+  
+  p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x, col=Sim))
+  p3<-p + 
+    geom_line(linewidth=1.2) +
+    ggtitle ('TB Incidence (Ex-prisoners)') +
+    theme_bw() + ylab('Rate per 100k')+
+    theme(legend.title=element_blank(), legend.text=element_text(size=7))+ 
+    ylim(0,max(data$Incidence_x))+
+    xlim(c(2024,2035))+
+    scale_color_manual(values = colors_scen) 
+  
   p<- ggplot(data=data, mapping = aes(x=Years, y=Np*1e5, col=Sim))
   p4<-p + 
-    geom_line(size=1.2) +
+    geom_line(linewidth=1.2) +
     ggtitle ('Imprisioned population') +
     theme_bw() + ylab('Population per 100k')+
     ylim(0,max(data$Np*1e5))
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Nx*1e5, col=Sim))
   p5<-p + 
-    geom_line(size=1.2) +
+    geom_line(linewidth=1.2) +
     ggtitle ('Ex-prisoner population') +
     theme_bw() + ylab('Population per 100k')+
     ylim(0,max(data$Nx*1e5))
-
+  
   df1<- data.frame(
     Years=time+(2024-400), 
     Incidence=rate.inc)
@@ -156,19 +223,21 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   df3<- data.frame(
     Years=time+(2024-400), 
     Incidence=rate.inc_x)
-  df3$group="Ex-Prisoners"
+  df3$group="Ex-prisoners"
   
   df<-rbind(df1,df2,df3)
   
+
   
   p<- ggplot(df, aes(x=Years, y=Incidence, color=group))
   p6<-p + 
-    geom_line(size=1.2) +
+    geom_line(linewidth=1.2) +
     ggtitle ('TB Incidence') +
     theme_bw() + ylab('Rate per 100,000')+
+    scale_color_manual(values = colors) +
     ylim(0,max(data$Incidence_p))
   
- 
+  
   df1<- data.frame(
     Years=time+(2024-400), 
     Prevalence=dat$prev*1e2)
@@ -189,60 +258,54 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(df, aes(x=Years, y=Prevalence, color=group))
   p7<-p + 
-    geom_line(size=1.2) +
+    geom_line(linewidth=1.2) +
     ggtitle ('TB Prevalence') +
     theme_bw() + ylab('%')+
     ylim(0,max(data$Incidence_p))
   
+  p8=NA
   
+  if(int_name%in%levs){
+ 
 
-  # Pie chart of remote vs recent incidence 
-  df <- data.frame(
-    Source = c("Recent", "Remote"),
-    value  = c(1-tail(remote,1),tail(remote,1))
-  )
-  df2 <- data.frame(
-    Source = c("Recent", "Remote"),
-    value  = c(1-tail(remote_p,1),tail(remote_p,1))
-  )
-  df3 <- data.frame(
-    Source = c("Recent", "Remote"),
-    value  = c(1-tail(remote_x,1),tail(remote_x,1))
-  )
-  
-  mycols <- c("#0073C2FF", "#EFC000FF")
-  pie1<- ggplot(df, aes(x="", y=value, fill=Source))+
-    geom_bar(width = 1, stat = "identity") +
-    coord_polar("y", start=0)+
-    scale_fill_manual(values = mycols) +
-    theme_void()+
-    ggtitle (titl) 
+    df<-data[data$Sim==int_name,] 
+    idend<-25
+    id0<-1
 
-  pie2<- ggplot(df2, aes(x="", y=value, fill=Source))+
-    geom_bar(width = 1, stat = "identity") +
-    coord_polar("y", start=0)+
-    scale_fill_manual(values = mycols) +
-    theme_void()+
-    ggtitle (titl) 
+    reductions<-data.frame(
+      y=c(
+        1e2*(1-(df$Incidence[idend]/df$Incidence[id0])),
+        1e2*(1-(df$Incidence_x[idend]/df$Incidence_x[id0])),
+        1e2*(1-(df$Incidence_p[idend]/df$Incidence_p[id0]))
+      ),
+      Group=c("Community", "Ex-prisoners","Prisoners"))
+    
+   
+    p8<-ggplot(reductions, aes(x=Group, y=y, fill=Group))+
+      geom_bar(stat = "identity")+
+      ggtitle ('TB Incidence reductions in 10 years') +
+      ylim(c(0,75))+
+      theme_bw() + ylab('%')+xlab("")+
+      scale_fill_manual(values = colors) +
+      theme(
+        legend.position = "none",
+        panel.background = element_blank()
+      )
+  }
   
-  pie3<- ggplot(df3, aes(x="", y=value, fill=Source))+
-    geom_bar(width = 1, stat = "identity") +
-    coord_polar("y", start=0)+
-    scale_fill_manual(values = mycols) +
-    theme_void()+
-    ggtitle (titl) 
   
   output<-list("out"=out, 
+               "incbase_c"=pb1,
+               "incbase_p"=pb2,
+               "incbase_x"=pb3,
                "inc_c"=p1,
                "inc_p"=p2,
                "inc_x"=p3,
                "pop_p"=p4,
                "pop_x"=p5, 
-               "pie1"=pie1,
-               "pie2"=pie2, 
-               "pie3"=pie3, 
                "inc_all"=p6, 
-               "prev_all"=p7, 
+               "prev_all"=p7,
+               "reduc"=p8,
                "data"=data)
   
   # Spit-out results
