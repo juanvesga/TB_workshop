@@ -141,7 +141,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   # Create our plot
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence))
   pb1<-p + 
-    geom_line(linewidth=1.2, color="firebrick") +
+    geom_line(size=1.2, color="firebrick") +
     geom_point(aes(x=2023,y=250),shape = 15, color = "black", size = 3) +
     ggtitle ('TB Incidence (Community)') +
     theme_bw() + ylab('Rate per 100k')+
@@ -150,7 +150,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p))
   pb2<-p + 
-    geom_line(linewidth=1.2,, color="firebrick") +
+    geom_line(size=1.2,, color="firebrick") +
     geom_point(aes(x=2023,y=990),shape = 15, color = "black", size = 3) +
     ggtitle ('TB Incidence (Prisons)') +
     theme_bw() + ylab('Rate per 100k')+
@@ -159,7 +159,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x))
   pb3<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('TB Incidence (Ex-prisoners)') +
     theme_bw() + ylab('Rate per 100k')+
     ylim(0,max(data$Incidence_x))
@@ -168,7 +168,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence, col=Sim))
   p1<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('TB Incidence (Community)') +
     theme_bw() + ylab('Rate per 100k')+
     theme(legend.title=element_blank(), legend.text=element_text(size=7))+ 
@@ -178,7 +178,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p, col=Sim))
   p2<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('TB Incidence (Prisons)') +
     theme_bw() + ylab('Rate per 100k')+
     theme(legend.title=element_blank(), legend.text=element_text(size=7))+ 
@@ -188,7 +188,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x, col=Sim))
   p3<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('TB Incidence (Ex-prisoners)') +
     theme_bw() + ylab('Rate per 100k')+
     theme(legend.title=element_blank(), legend.text=element_text(size=7))+ 
@@ -198,14 +198,14 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Np*1e5, col=Sim))
   p4<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('Imprisioned population') +
     theme_bw() + ylab('Population per 100k')+
     ylim(0,max(data$Np*1e5))
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Nx*1e5, col=Sim))
   p5<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('Ex-prisoner population') +
     theme_bw() + ylab('Population per 100k')+
     ylim(0,max(data$Nx*1e5))
@@ -231,7 +231,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(df, aes(x=Years, y=Incidence, color=group))
   p6<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('TB Incidence') +
     theme_bw() + ylab('Rate per 100,000')+
     scale_color_manual(values = colors) +
@@ -258,7 +258,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   
   p<- ggplot(df, aes(x=Years, y=Prevalence, color=group))
   p7<-p + 
-    geom_line(linewidth=1.2) +
+    geom_line(size=1.2) +
     ggtitle ('TB Prevalence') +
     theme_bw() + ylab('%')+
     ylim(0,max(data$Incidence_p))
