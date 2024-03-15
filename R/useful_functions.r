@@ -142,10 +142,10 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence))
   pb1<-p + 
     geom_line(size=1.2, color="firebrick") +
-    geom_point(aes(x=2023,y=250),shape = 15, color = "black", size = 3) +
+    geom_point(aes(x=2023,y=190),shape = 15, color = "black", size = 3) +
     ggtitle ('TB Incidence (Community)') +
     theme_bw() + ylab('Rate per 100k')+
-    ylim(c(0,1000))+
+    ylim(c(0,1400))+
     xlim(c(1980,2024))
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_p))
@@ -154,7 +154,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
     geom_point(aes(x=2023,y=990),shape = 15, color = "black", size = 3) +
     ggtitle ('TB Incidence (Prisons)') +
     theme_bw() + ylab('Rate per 100k')+
-     ylim(c(0,1000))+
+    ylim(c(0,1400))+
     xlim(c(1980,2024))
   
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence_x))
@@ -284,7 +284,7 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
     p8<-ggplot(reductions, aes(x=Group, y=y, fill=Group))+
       geom_bar(stat = "identity")+
       ggtitle ('TB Incidence reductions in 10 years') +
-      ylim(c(0,75))+
+      ylim(c(0,100))+
       theme_bw() + ylab('%')+xlab("")+
       scale_fill_manual(values = colors) +
       theme(
