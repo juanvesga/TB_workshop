@@ -17,6 +17,6 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/juanvesga/TB_workshop/HEAD)
 
-2) Una vez acceda al cuaderno en JypyterLab, abra el archivo llamado  "practical_espa.ipynb". 
+2) Una vez acceda al cuaderno en JupyterLab, abra el archivo llamado  "practical_espa.ipynb". 
    
 3) Allí encontrará las instrucciones y el codigo de la sesión. 
