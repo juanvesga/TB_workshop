@@ -116,7 +116,8 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
           "Fast access",
           "Prevention",
           "Fast access X",
-          "Prevention X")
+          "Prevention X",
+          "Full cascade")
   
   data$Sim<-factor(data$Sim, levels=levs)
   remote<-fr.remo  # rename a variable with the fraction of remote incidence 
@@ -136,7 +137,8 @@ get_intervention<- function (sfin, params_new, params_old,times_new,
           "Fast access"="#055770",
           "Prevention"="#d3b016",
           "Fast access X" = "#3aaf1d",
-          "Prevention X"="#e448e4")
+          "Prevention X"="#e448e4",
+          "Full cascade"="black")
   
   # Create our plot
   p<- ggplot(data=data, mapping = aes(x=Years, y=Incidence))
